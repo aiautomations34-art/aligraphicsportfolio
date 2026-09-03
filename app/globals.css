@@ -1211,3 +1211,620 @@ button {
     display: none;
   }
 }
+
+/* ============================================================
+   Theme transition
+   ============================================================ */
+
+html,
+body {
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* Dark theme */
+
+html[data-theme="dark"] {
+  --paper: #11120f;
+  --paper-dark: #1b1c18;
+  --ink: #f3f0e8;
+  --muted: #a4a69a;
+  --acid: #d6ff3f;
+  --line: rgba(243, 240, 232, 0.2);
+  --dark: #080908;
+  --white: #f3f0e8;
+}
+
+html[data-theme="dark"] body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+html[data-theme="dark"] .button-dark {
+  background: var(--white);
+  color: #11120f;
+}
+
+html[data-theme="dark"] .button-dark:hover {
+  background: var(--acid);
+  color: #11120f;
+}
+
+html[data-theme="dark"] .nav-links {
+  color: #c3c4bb;
+}
+
+html[data-theme="dark"] .nav-links a:hover {
+  color: var(--white);
+}
+
+html[data-theme="dark"] .project-artwork,
+html[data-theme="dark"] .about-artwork {
+  border-color: rgba(243, 240, 232, 0.25);
+}
+
+html[data-theme="dark"] .orbit-core {
+  background: #20231c;
+  border-color: rgba(214, 255, 63, 0.45);
+}
+
+html[data-theme="dark"] .orbit-card {
+  background: #20211d;
+  border-color: rgba(243, 240, 232, 0.24);
+}
+
+html[data-theme="dark"] .project-modal {
+  background: #1a1b17;
+}
+
+html[data-theme="dark"] .theme-toggle {
+  background: #242620;
+  color: var(--white);
+  border-color: rgba(243, 240, 232, 0.25);
+}
+
+/* Header controls */
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.theme-toggle {
+  min-height: 36px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 12px;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--ink);
+  color: var(--paper);
+  transform: translateY(-2px);
+}
+
+.menu-button {
+  display: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+/* 3D Orbit Showcase */
+
+.orbit-showcase {
+  padding: 75px 0 45px;
+  position: relative;
+}
+
+.orbit-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 40px;
+  margin-bottom: 15px;
+}
+
+.orbit-heading h2 {
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.8rem, 5vw, 5rem);
+  line-height: 0.9;
+  letter-spacing: -0.08em;
+  font-weight: 500;
+}
+
+.orbit-heading p {
+  max-width: 310px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+
+.orbit-stage {
+  height: 570px;
+  width: 100%;
+  position: relative;
+  display: grid;
+  place-items: center;
+  perspective: 1250px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.orbit-stage::before {
+  content: "";
+  position: absolute;
+  width: 73%;
+  height: 73%;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  transform: rotateX(70deg);
+  opacity: 0.8;
+}
+
+.orbit-stage::after {
+  content: "";
+  position: absolute;
+  width: 86%;
+  height: 1px;
+  left: 7%;
+  top: 50%;
+  background: var(--line);
+  opacity: 0.7;
+}
+
+.orbit-glow {
+  width: 310px;
+  height: 310px;
+  position: absolute;
+  border-radius: 50%;
+  background: var(--acid);
+  opacity: 0.18;
+  filter: blur(65px);
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+.orbit-core {
+  width: 175px;
+  height: 175px;
+  position: absolute;
+  z-index: 1;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper-dark);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-shadow:
+    0 0 0 15px rgba(214, 255, 63, 0.04),
+    0 20px 55px rgba(0, 0, 0, 0.12);
+}
+
+.orbit-core span {
+  font-family: var(--font-display), sans-serif;
+  font-size: 50px;
+  font-weight: 700;
+  letter-spacing: -0.14em;
+  line-height: 0.8;
+}
+
+.orbit-core small {
+  margin-top: 15px;
+  color: var(--muted);
+  font-family: var(--font-display), sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  line-height: 1.35;
+}
+
+.orbit-ring {
+  --orbit-radius: 295px;
+  width: 192px;
+  height: 270px;
+  position: relative;
+  z-index: 3;
+  transform-style: preserve-3d;
+  animation: orbitRotation 23s linear infinite;
+}
+
+.orbit-ring.is-paused {
+  animation-play-state: paused;
+}
+
+.orbit-card {
+  width: 192px;
+  height: 270px;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid rgba(24, 24, 23, 0.3);
+  background: var(--paper);
+  color: var(--ink);
+  text-align: left;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  cursor: pointer;
+  box-shadow: 12px 18px 0 rgba(24, 24, 23, 0.13);
+  transition:
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.orbit-card:hover,
+.orbit-card.is-focused {
+  border-color: var(--acid);
+  box-shadow:
+    0 0 0 5px var(--acid),
+    16px 23px 0 rgba(24, 24, 23, 0.16);
+}
+
+.orbit-card:focus-visible {
+  outline: 3px solid var(--acid);
+  outline-offset: 6px;
+}
+
+.orbit-art {
+  width: 100%;
+  height: 185px;
+}
+
+.orbit-art .art-fallback {
+  padding: 17px;
+}
+
+.orbit-art .art-fallback strong {
+  font-size: 65px;
+}
+
+.orbit-card-info {
+  height: 85px;
+  padding: 13px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  background: var(--paper);
+  position: relative;
+  z-index: 2;
+}
+
+.orbit-card-info > span {
+  color: var(--muted);
+  font-family: var(--font-display), sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.orbit-card-info strong {
+  font-family: var(--font-display), sans-serif;
+  font-size: 19px;
+  letter-spacing: -0.06em;
+}
+
+.orbit-card-info small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.orbit-card-shine {
+  width: 45%;
+  height: 150%;
+  position: absolute;
+  z-index: 4;
+  top: -25%;
+  left: -80%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transform: rotate(20deg);
+  transition: left 0.7s ease;
+  pointer-events: none;
+}
+
+.orbit-card:hover .orbit-card-shine {
+  left: 130%;
+}
+
+.orbit-instructions {
+  position: absolute;
+  z-index: 5;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+  color: var(--muted);
+  font-family: var(--font-display), sans-serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.instruction-dot {
+  width: 7px;
+  height: 7px;
+  display: inline-block;
+  background: var(--acid);
+  border-radius: 50%;
+}
+
+/* Project modal */
+
+.project-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  padding: 25px;
+  display: grid;
+  place-items: center;
+  background: rgba(9, 10, 8, 0.78);
+  backdrop-filter: blur(12px);
+}
+
+.project-modal {
+  width: min(950px, 100%);
+  max-height: calc(100vh - 50px);
+  overflow-y: auto;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 0.72fr;
+  gap: 0;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 20px 25px 0 var(--acid);
+}
+
+.modal-close {
+  width: 43px;
+  height: 43px;
+  position: absolute;
+  z-index: 10;
+  top: 17px;
+  right: 17px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease;
+}
+
+.modal-close:hover {
+  background: var(--acid);
+  color: var(--ink);
+  transform: rotate(90deg);
+}
+
+.modal-image-wrapper {
+  min-height: 550px;
+}
+
+.modal-artwork {
+  width: 100%;
+  height: 100%;
+  min-height: 550px;
+}
+
+.modal-content {
+  padding: 75px 38px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.modal-number {
+  color: var(--muted);
+  font-family: var(--font-display), sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.modal-content h3 {
+  margin-top: 25px;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.7rem, 5vw, 5rem);
+  line-height: 0.88;
+  letter-spacing: -0.09em;
+  font-weight: 500;
+}
+
+.modal-category {
+  margin-top: 17px;
+  color: #8ca52b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.modal-content p {
+  max-width: 300px;
+  margin-top: 27px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.modal-content .button {
+  margin-top: 30px;
+  font-size: 12px;
+}
+
+/* New animations */
+
+@keyframes orbitRotation {
+  from {
+    transform: rotateY(0deg) rotateX(-5deg);
+  }
+  to {
+    transform: rotateY(360deg) rotateX(-5deg);
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.13;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.24;
+  }
+}
+
+/* Orbit + modal responsive */
+
+@media (max-width: 900px) {
+  .orbit-heading {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .orbit-heading p {
+    max-width: 450px;
+  }
+
+  .project-modal {
+    grid-template-columns: 1fr;
+    max-height: calc(100vh - 30px);
+  }
+
+  .modal-image-wrapper,
+  .modal-artwork {
+    min-height: 330px;
+    height: 330px;
+  }
+
+  .modal-content {
+    padding: 35px 25px 30px;
+  }
+}
+
+@media (max-width: 650px) {
+  .header-controls {
+    margin-left: auto;
+  }
+
+  .theme-toggle {
+    padding: 0;
+    width: 36px;
+    justify-content: center;
+  }
+
+  .theme-toggle span {
+    display: none;
+  }
+
+  .menu-button {
+    display: grid;
+    place-items: center;
+  }
+
+  .orbit-showcase {
+    padding: 55px 0 40px;
+  }
+
+  .orbit-stage {
+    height: 480px;
+    margin-top: 25px;
+  }
+
+  .orbit-ring {
+    --orbit-radius: 205px;
+    width: 155px;
+    height: 225px;
+  }
+
+  .orbit-card {
+    width: 155px;
+    height: 225px;
+  }
+
+  .orbit-art {
+    height: 150px;
+  }
+
+  .orbit-card-info {
+    height: 75px;
+    padding: 10px 12px;
+  }
+
+  .orbit-card-info strong {
+    font-size: 16px;
+  }
+
+  .orbit-card-info small {
+    font-size: 9px;
+  }
+
+  .orbit-core {
+    width: 125px;
+    height: 125px;
+  }
+
+  .orbit-core span {
+    font-size: 38px;
+  }
+
+  .orbit-core small {
+    margin-top: 11px;
+    font-size: 7px;
+  }
+
+  .orbit-stage::before {
+    width: 90%;
+    height: 60%;
+  }
+
+  .orbit-instructions {
+    bottom: 8px;
+    font-size: 8px;
+    gap: 6px;
+  }
+
+  .project-modal-backdrop {
+    padding: 15px;
+  }
+
+  .modal-close {
+    top: 10px;
+    right: 10px;
+  }
+
+  .modal-content h3 {
+    font-size: 3.5rem;
+  }
+}
