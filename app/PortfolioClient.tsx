@@ -11,49 +11,11 @@ import {
   Moon,
   Sun,
   X,
+  ChevronRight,
 } from "lucide-react";
 
 const whatsappUrl =
   "https://wa.me/923150485239?text=Hi%20Ali%2C%20I%20would%20like%20to%20discuss%20a%20design%20project.";
-
-const projects = [
-  {
-    number: "01",
-    title: "NOVA Coffee",
-    category: "Brand Identity",
-    description:
-      "A warm, expressive identity system created for a modern specialty coffee brand.",
-    image: "/images/project-design-system.webp",
-    className: "project-a",
-  },
-  {
-    number: "02",
-    title: "Mono Social",
-    category: "Social Media Design",
-    description:
-      "A bold campaign system designed to help a digital brand stand out online.",
-    image: "/images/project-logo-development.webp",
-    className: "project-b",
-  },
-  {
-    number: "03",
-    title: "Frame Finance",
-    category: "UI / UX Design",
-    description:
-      "A clean and confident interface direction for a next-generation finance product.",
-    image: "/images/project-print-spread.webp",
-    className: "project-c",
-  },
-  {
-    number: "04",
-    title: "Form & Function",
-    category: "Editorial Design",
-    description:
-      "A visual editorial experiment combining typography, composition, and texture.",
-    image: "/images/portfolio-wall.webp",
-    className: "project-d",
-  },
-];
 
 const services = [
   {
@@ -80,15 +42,21 @@ const process = [
   "Deliver a polished final system",
 ];
 
+interface Category {
+  name: string;
+  folder: string;
+  images: string[];
+}
+
 function Artwork({
   src,
   alt,
-  label,
+  label = "",
   className = "",
 }: {
   src: string;
   alt: string;
-  label: string;
+  label?: string;
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
@@ -99,7 +67,7 @@ function Artwork({
         <img src={src} alt={alt} onError={() => setFailed(true)} />
       ) : (
         <div className="art-fallback">
-          <span>{label}</span>
+          <span>{alt}</span>
           <strong>AH</strong>
         </div>
       )}
@@ -107,32 +75,102 @@ function Artwork({
   );
 }
 
-function OrbitShowcase({ orbitImages }: { orbitImages: string[] }) {
-  const [paused, setPaused] = useState(false);
-  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
-  const [selectedProject, setSelectedProject] = useState<number | null>(null);
+function CategoryCard({
+  category,
+  onClick,
+}: {
+  category: Category;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      className="category-card"
+      onClick={onClick}
+      aria-label={`Open ${category.name} gallery`}
+    >
+      <div className="category-card-glow" />
+      <div className="category-card-border">
+        <div className="category-card-inner">
+          <div className="category-card-preview">
+            {category.images.slice(0, 2).map((img, i) => (
+              <div
+                key={i}
+                className="category-preview-img"
+                style={{
+                  backgroundImage: `url(${img})`,
+                  animationDelay: `${i * -2}s`,
+                }}
+              />
+            ))}
+          </div>
+          <div className="category-card-info">
+            <h3>{category.name}</h3>
+            <span>{category.images.length} projects</span>
+            <ChevronRight size={18} />
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+}
 
-  const handleProjectClick = (index: number) => {
-    setPaused(true);
+function CategoryShowcase({
+  categories,
+  onOpenCategory,
+}: {
+  categories: Category[];
+  onOpenCategory: (index: number) => void;
+}) {
+  if (categories.length === 0) {
+    return null;
+  }
 
-    if (focusedIndex !== index) {
-      setFocusedIndex(index);
-      return;
-    }
+  return (
+    <section className="category-showcase section-shell" id="work">
+      <div className="category-heading">
+        <div>
+          <p className="section-kicker">Selected work / 01</p>
+          <h2>
+            Explore my
+            <br />
+            portfolio.
+          </h2>
+        </div>
 
-    setSelectedProject(index);
-  };
+        <p>
+          Each category represents a distinct style and skill set. Click any
+          category to view all projects.
+        </p>
+      </div>
 
-  const closeModal = () => {
-    setSelectedProject(null);
-    setFocusedIndex(null);
-    setPaused(false);
-  };
+      <div className="category-grid">
+        {categories.map((category, index) => (
+          <CategoryCard
+            key={category.folder}
+            category={category}
+            onClick={() => onOpenCategory(index)}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ImageGalleryModal({
+  category,
+  index,
+  onClose,
+}: {
+  category: Category;
+  index: number;
+  onClose: () => void;
+}) {
+  const [selectedImg, setSelectedImg] = useState<string | null>(null);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        closeModal();
+        setSelectedImg(null);
       }
     };
 
@@ -140,182 +178,106 @@ function OrbitShowcase({ orbitImages }: { orbitImages: string[] }) {
     return () => window.removeEventListener("keydown", handleEscape);
   }, []);
 
-  const selectedProjectData = selectedProject !== null ? projects[selectedProject] : null;
-  const safeImages =
-    orbitImages.length > 0
-      ? orbitImages
-      : projects.map((p) => p.image);
-
   return (
     <>
-      <section className="orbit-showcase section-shell" id="orbit-work">
-        <div className="orbit-heading">
-          <div>
-            <p className="section-kicker">Showcase / Interactive view</p>
-            <h2>
-              Explore the
-              <br />
-              work in motion.
-            </h2>
-          </div>
-
-          <p>
-            Hover to pause the rotation. Click once to focus, then click again
-            to open a project. Add images to the orbit folder to show more.
-          </p>
-        </div>
-
-        <div
-          className={`orbit-stage ${paused ? "is-paused" : ""}`}
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => {
-            if (focusedIndex === null) {
-              setPaused(false);
-            }
-          }}
-        >
-          <div className="orbit-glow" />
-
-          <div className="orbit-core">
-            <span>AH</span>
-            <small>CREATIVE<br />DIRECTION</small>
-          </div>
-
-          <div className={`orbit-ring ${paused ? "is-paused" : ""}`}>
-            {safeImages.map((image, index) => {
-              const angle = index * (360 / safeImages.length);
-
-              return (
-                <article
-                  key={index}
-                  className={`orbit-card ${
-                    focusedIndex === index ? "is-focused" : ""
-                  }`}
-                  style={{
-                    transform: `rotateY(${angle}deg) translateZ(var(--orbit-radius))`,
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Open showcase item ${index + 1}`}
-                  onMouseEnter={() => setPaused(true)}
-                  onClick={() => handleProjectClick(index)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      handleProjectClick(index);
-                    }
-                  }}
-                >
-                  <Artwork
-                    src={image}
-                    alt={`Showcase item ${index + 1}`}
-                    label={`Item ${String(index + 1).padStart(2, "0")}`}
-                    className={`orbit-art`}
-                  />
-
-                  <div className="orbit-card-info">
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <strong>Showcase</strong>
-                    <small>Creative Direction</small>
-                  </div>
-
-                  <div className="orbit-card-shine" />
-                </article>
-              );
-            })}
-          </div>
-
-          <div className="orbit-instructions">
-            <span className="instruction-dot" />
-            <span>Hover to pause</span>
-            <span>•</span>
-            <span>Click twice to open</span>
-          </div>
-        </div>
-      </section>
-
       <AnimatePresence>
-        {selectedProject !== null && (
+        {selectedImg && (
           <motion.div
-            className="project-modal-backdrop"
+            className="image-fullscreen-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={closeModal}
+            onClick={() => setSelectedImg(null)}
           >
-            <motion.div
-              className="project-modal"
-              initial={{ opacity: 0, y: 35, scale: 0.94 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 25, scale: 0.94 }}
-              transition={{ duration: 0.35 }}
-              onClick={(event) => event.stopPropagation()}
+            <motion.button
+              className="image-fullscreen-close"
+              onClick={() => setSelectedImg(null)}
+              aria-label="Close fullscreen"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
-              <button
-                className="modal-close"
-                onClick={closeModal}
-                aria-label="Close project preview"
-              >
-                <X size={21} />
-              </button>
-
-              <div className="modal-image-wrapper">
-                <Artwork
-                  src={safeImages[selectedProject]}
-                  alt={`Large showcase preview ${selectedProject + 1}`}
-                  label={`Item ${String(selectedProject + 1).padStart(2, "0")}`}
-                  className="modal-artwork"
-                />
-              </div>
-
-              <div className="modal-content">
-                <span className="modal-number">
-                  {String(selectedProject + 1).padStart(2, "0")} / SHOWCASE
-                </span>
-
-                <h3>
-                  {selectedProjectData
-                    ? selectedProjectData.title
-                    : "Showcase Piece"}
-                </h3>
-
-                <span className="modal-category">
-                  {selectedProjectData
-                    ? selectedProjectData.category
-                    : "Creative Direction"}
-                </span>
-
-                <p>
-                  {selectedProjectData
-                    ? selectedProjectData.description
-                    : "A piece from the interactive showcase collection, presented in detail."}
-                </p>
-
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="button button-dark"
-                >
-                  Discuss a similar project
-                  <ArrowUpRight size={17} />
-                </a>
-              </div>
-            </motion.div>
+              <X size={24} />
+            </motion.button>
+            <img src={selectedImg} alt="Full view" />
           </motion.div>
         )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        <motion.div
+          className="project-modal-backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+        >
+          <motion.div
+            className="project-modal project-modal-wide"
+            initial={{ opacity: 0, y: 35, scale: 0.94 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 25, scale: 0.94 }}
+            transition={{ duration: 0.35 }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              className="modal-close"
+              onClick={onClose}
+              aria-label="Close gallery"
+            >
+              <X size={21} />
+            </button>
+
+            <div className="modal-image-wrapper">
+              <div className="modal-category-label">
+                <span>{category.name}</span>
+                <strong>{category.images.length} projects</strong>
+              </div>
+
+              <div className="gallery-grid">
+                {category.images.map((img, imgIndex) => (
+                  <motion.div
+                    key={imgIndex}
+                    className="gallery-item"
+                    onClick={() => setSelectedImg(img)}
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <img src={img} alt={`${category.name} ${imgIndex + 1}`} />
+                    <div className="gallery-item-overlay">
+                      <span>View</span>
+                      <ChevronRight size={16} />
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            <div className="modal-content">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="button button-dark"
+              >
+                Discuss this project
+                <ArrowUpRight size={17} />
+              </a>
+            </div>
+          </motion.div>
+        </motion.div>
       </AnimatePresence>
     </>
   );
 }
 
 export default function PortfolioClient({
-  orbitImages,
+  categories,
 }: {
-  orbitImages: string[];
+  categories: Category[];
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [openCategory, setOpenCategory] = useState<number | null>(null);
 
   useEffect(() => {
     const savedTheme =
@@ -327,7 +289,6 @@ export default function PortfolioClient({
       const prefersDark = window.matchMedia(
         "(prefers-color-scheme: dark)"
       ).matches;
-
       setDarkMode(prefersDark);
     }
   }, []);
@@ -383,7 +344,10 @@ export default function PortfolioClient({
         </div>
       </header>
 
-      <OrbitShowcase orbitImages={orbitImages} />
+      <CategoryShowcase
+        categories={categories}
+        onOpenCategory={(index) => setOpenCategory(index)}
+      />
 
       <section className="hero section-shell" id="top">
         <div className="hero-copy">
@@ -446,7 +410,6 @@ export default function PortfolioClient({
           <Artwork
             src="/images/hero-designer-identity.webp"
             alt="Abstract graphic design collage"
-            label="Creative direction"
             className="hero-artwork"
           />
 
@@ -474,55 +437,6 @@ export default function PortfolioClient({
           <span>Digital Design</span>
           <i>✳</i>
           <span>Visual Systems</span>
-        </div>
-      </section>
-
-      <section className="work-section section-shell" id="work">
-        <div className="section-heading">
-          <div>
-            <p className="section-kicker">Selected work / 01</p>
-            <h2>
-              A few things
-              <br />
-              I&apos;ve made.
-            </h2>
-          </div>
-
-          <p className="section-intro">
-            A selection of identity, campaign, editorial, and interface work
-            created with intention and a little bit of attitude.
-          </p>
-        </div>
-
-        <div className="project-grid">
-          {projects.map((project, index) => (
-            <motion.article
-              className={`project-card ${index % 2 === 1 ? "project-offset" : ""}`}
-              key={project.title}
-              initial={{ opacity: 0, y: 45 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.7, delay: index * 0.08 }}
-            >
-              <Artwork
-                src={project.image}
-                alt={`${project.title} project preview`}
-                label={project.category}
-                className={`project-artwork ${project.className}`}
-              />
-
-              <div className="project-meta">
-                <div>
-                  <span className="project-number">{project.number}</span>
-                  <h3>{project.title}</h3>
-                </div>
-
-                <span className="project-category">{project.category}</span>
-              </div>
-
-              <p className="project-description">{project.description}</p>
-            </motion.article>
-          ))}
         </div>
       </section>
 
@@ -692,6 +606,14 @@ export default function PortfolioClient({
         <MessageCircle size={22} />
         <span>Let&apos;s talk</span>
       </a>
+
+      {openCategory !== null && categories[openCategory] && (
+        <ImageGalleryModal
+          category={categories[openCategory]}
+          index={openCategory}
+          onClose={() => setOpenCategory(null)}
+        />
+      )}
     </main>
   );
 }

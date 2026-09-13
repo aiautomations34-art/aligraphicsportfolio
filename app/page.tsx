@@ -4,22 +4,44 @@ import PortfolioClient from "./PortfolioClient";
 
 export const dynamic = "force-static";
 
-function getOrbitImages(): string[] {
-  const orbitDir = path.join(process.cwd(), "public", "orbit");
+interface Category {
+  name: string;
+  folder: string;
+  images: string[];
+}
+
+function getCategories(): Category[] {
+  const rootDir = path.join(process.cwd(), "public", "images", "r");
 
   try {
-    const files = fs.readdirSync(orbitDir).filter((file) =>
-      /\.(webp|png|jpg|jpeg|svg|gif|avif)$/i.test(file)
+    const folders = fs.readdirSync(rootDir).filter((folder) =>
+      fs.statSync(path.join(rootDir, folder)).isDirectory()
     );
 
-    return files.map((file) => `/orbit/${file}`);
+    return folders.map((folder) => {
+      const folderPath = path.join(rootDir, folder);
+      const files = fs.readdirSync(folderPath).filter((file) =>
+        /\.(webp|png|jpg|jpeg|svg|gif|avif)$/i.test(file)
+      );
+
+      return {
+        name: folder
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
+        folder,
+        images: files.map((file) =>
+          `/images/r/${encodeURIComponent(folder)}/${encodeURIComponent(file)}`
+        ),
+      };
+    });
   } catch {
     return [];
   }
 }
 
 export default function Home() {
-  const orbitImages = getOrbitImages();
+  const categories = getCategories();
 
-  return <PortfolioClient orbitImages={orbitImages} />;
+  return <PortfolioClient categories={categories} />;
 }
