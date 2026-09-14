@@ -75,6 +75,214 @@ function Artwork({
   );
 }
 
+function OrbitShowcase({
+  categories,
+}: {
+  categories: Category[];
+}) {
+  const [paused, setPaused] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const [selectedProject, setSelectedProject] = useState<number | null>(null);
+
+  const allImages = categories.flatMap((c) => c.images);
+
+  const handleProjectClick = (index: number) => {
+    setPaused(true);
+
+    if (focusedIndex !== index) {
+      setFocusedIndex(index);
+      return;
+    }
+
+    setSelectedProject(index);
+  };
+
+  const closeModal = () => {
+    setSelectedProject(null);
+    setFocusedIndex(null);
+    setPaused(false);
+  };
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, []);
+
+  const selectedCategoryData = selectedProject !== null ? categories[Math.floor(selectedProject / allImages.length)] : null;
+  const selectedImg = selectedProject !== null ? allImages[selectedProject] : null;
+
+  if (allImages.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      <section className="orbit-showcase section-shell" id="orbit-work">
+        <div className="orbit-heading">
+          <div>
+            <p className="section-kicker">Selected work / Interactive view</p>
+            <h2>
+              Explore the
+              <br />
+              work in motion.
+            </h2>
+          </div>
+
+          <p>
+            Hover over a project to pause the rotation. Click once to focus it,
+            then click again to view the project.
+          </p>
+        </div>
+
+        <div
+          className={`orbit-stage ${paused ? "is-paused" : ""}`}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => {
+            if (focusedIndex === null) {
+              setPaused(false);
+            }
+          }}
+        >
+          <div className="orbit-glow" />
+
+          <div className="orbit-core">
+            <span>AH</span>
+            <small>CREATIVE<br />DIRECTION</small>
+          </div>
+
+          <div className={`orbit-ring ${paused ? "is-paused" : ""}`}>
+            {allImages.map((img, index) => {
+              const angle = index * (360 / allImages.length);
+
+              return (
+                <article
+                  key={index}
+                  className={`orbit-card ${
+                    focusedIndex === index ? "is-focused" : ""
+                  }`}
+                  style={{
+                    transform: `rotateY(${angle}deg) translateZ(var(--orbit-radius))`,
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Open showcase item ${index + 1}`}
+                  onMouseEnter={() => setPaused(true)}
+                  onClick={() => handleProjectClick(index)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      handleProjectClick(index);
+                    }
+                  }}
+                >
+                  <Artwork
+                    src={img}
+                    alt={`Showcase item ${index + 1}`}
+                    label={`Item ${String(index + 1).padStart(2, "0")}`}
+                    className={`orbit-art`}
+                  />
+
+                  <div className="orbit-card-info">
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <strong>Showcase</strong>
+                    <small>Creative Direction</small>
+                  </div>
+
+                  <div className="orbit-card-shine" />
+                </article>
+              );
+            })}
+          </div>
+
+          <div className="orbit-instructions">
+            <span className="instruction-dot" />
+            <span>Hover to pause</span>
+            <span>•</span>
+            <span>Click twice to open</span>
+          </div>
+        </div>
+      </section>
+
+      <AnimatePresence>
+        {selectedProject !== null && selectedImg && (
+          <motion.div
+            className="project-modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeModal}
+          >
+            <motion.div
+              className="project-modal"
+              initial={{ opacity: 0, y: 35, scale: 0.94 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 25, scale: 0.94 }}
+              transition={{ duration: 0.35 }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button
+                className="modal-close"
+                onClick={closeModal}
+                aria-label="Close project preview"
+              >
+                <X size={21} />
+              </button>
+
+              <div className="modal-image-wrapper">
+                <Artwork
+                  src={selectedImg}
+                  alt={`Large showcase preview`}
+                  label="Showcase"
+                  className="modal-artwork"
+                />
+              </div>
+
+              <div className="modal-content">
+                <span className="modal-number">
+                  {String(selectedProject + 1).padStart(2, "0")} / SHOWCASE
+                </span>
+
+                <h3>
+                  {selectedCategoryData
+                    ? selectedCategoryData.name
+                    : "Showcase Piece"}
+                </h3>
+
+                <span className="modal-category">
+                  {selectedCategoryData
+                    ? selectedCategoryData.name
+                    : "Creative Direction"}
+                </span>
+
+                <p>
+                  A piece from the interactive showcase collection,
+                  presented in detail.
+                </p>
+
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="button button-dark"
+                >
+                  Discuss a similar project
+                  <ArrowUpRight size={17} />
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
 function CategoryCard({
   category,
   onClick,
@@ -343,6 +551,8 @@ export default function PortfolioClient({
           </button>
         </div>
       </header>
+
+      <OrbitShowcase categories={categories} />
 
       <CategoryShowcase
         categories={categories}
