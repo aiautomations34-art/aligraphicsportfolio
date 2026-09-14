@@ -81,205 +81,79 @@ function OrbitShowcase({
   categories: Category[];
 }) {
   const [paused, setPaused] = useState(false);
-  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
-  const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const [hovered, setHovered] = useState(false);
 
   const allImages = categories.flatMap((c) => c.images);
-
-  const handleProjectClick = (index: number) => {
-    setPaused(true);
-
-    if (focusedIndex !== index) {
-      setFocusedIndex(index);
-      return;
-    }
-
-    setSelectedProject(index);
-  };
-
-  const closeModal = () => {
-    setSelectedProject(null);
-    setFocusedIndex(null);
-    setPaused(false);
-  };
-
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        closeModal();
-      }
-    };
-
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, []);
-
-  const selectedCategoryData = selectedProject !== null ? categories[Math.floor(selectedProject / allImages.length)] : null;
-  const selectedImg = selectedProject !== null ? allImages[selectedProject] : null;
 
   if (allImages.length === 0) {
     return null;
   }
 
+  const loopImages = [...allImages, ...allImages];
+
   return (
-    <>
-      <section className="orbit-showcase section-shell" id="orbit-work">
-        <div className="orbit-heading">
-          <div>
-            <p className="section-kicker">Selected work / Interactive view</p>
-            <h2>
-              Explore the
-              <br />
-              work in motion.
-            </h2>
-          </div>
-
-          <p>
-            Hover over a project to pause the rotation. Click once to focus it,
-            then click again to view the project.
-          </p>
+    <section
+      className={`slider-showcase section-shell ${paused || hovered ? "is-paused" : ""}`}
+      id="orbit-work"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="slider-heading">
+        <div>
+          <p className="section-kicker">Selected work / 01</p>
+          <h2>
+            Scroll through
+            <br />
+            my work.
+          </h2>
         </div>
 
-        <div
-          className={`orbit-stage ${paused ? "is-paused" : ""}`}
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => {
-            if (focusedIndex === null) {
-              setPaused(false);
-            }
-          }}
-        >
-          <div className="orbit-glow" />
+        <p>
+          Hover to pause. Every slide shows a project. The logo stays
+          3D in the center.
+        </p>
+      </div>
 
-          <div className="orbit-core">
-            <span>AH</span>
-            <small>CREATIVE<br />DIRECTION</small>
-          </div>
-
-          <div className={`orbit-ring ${paused ? "is-paused" : ""}`}>
-            {allImages.map((img, index) => {
-              const angle = index * (360 / allImages.length);
-
-              return (
-                <article
-                  key={index}
-                  className={`orbit-card ${
-                    focusedIndex === index ? "is-focused" : ""
-                  }`}
-                  style={{
-                    transform: `rotateY(${angle}deg) translateZ(var(--orbit-radius))`,
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Open showcase item ${index + 1}`}
-                  onMouseEnter={() => setPaused(true)}
-                  onClick={() => handleProjectClick(index)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      handleProjectClick(index);
-                    }
-                  }}
-                >
-                  <Artwork
-                    src={img}
-                    alt={`Showcase item ${index + 1}`}
-                    label={`Item ${String(index + 1).padStart(2, "0")}`}
-                    className={`orbit-art`}
-                  />
-
-                  <div className="orbit-card-info">
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <strong>Showcase</strong>
-                    <small>Creative Direction</small>
-                  </div>
-
-                  <div className="orbit-card-shine" />
-                </article>
-              );
-            })}
-          </div>
-
-          <div className="orbit-instructions">
-            <span className="instruction-dot" />
-            <span>Hover to pause</span>
-            <span>•</span>
-            <span>Click twice to open</span>
-          </div>
-        </div>
-      </section>
-
-      <AnimatePresence>
-        {selectedProject !== null && selectedImg && (
-          <motion.div
-            className="project-modal-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={closeModal}
-          >
-            <motion.div
-              className="project-modal"
-              initial={{ opacity: 0, y: 35, scale: 0.94 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 25, scale: 0.94 }}
-              transition={{ duration: 0.35 }}
-              onClick={(event) => event.stopPropagation()}
+      <div className="slider-wrapper">
+        <div className={`slider-track ${paused || hovered ? "is-paused" : ""}`}>
+          {loopImages.map((img, index) => (
+            <div
+              key={index}
+              className="slide-item"
+              style={{ width: "300px" }}
             >
-              <button
-                className="modal-close"
-                onClick={closeModal}
-                aria-label="Close project preview"
-              >
-                <X size={21} />
-              </button>
+              <Artwork
+                src={img}
+                alt={`Slide ${(index % allImages.length) + 1}`}
+                className="slide-img"
+              />
+            </div>
+          ))}
 
-              <div className="modal-image-wrapper">
-                <Artwork
-                  src={selectedImg}
-                  alt={`Large showcase preview`}
-                  label="Showcase"
-                  className="modal-artwork"
-                />
-              </div>
+          <div className="slider-logo-slot">
+            <div className="logo-3d">
+              <span className="logo-3d-text">AH</span>
+              <small className="logo-3d-sub">CREATIVE</small>
+              <small className="logo-3d-sub">DIRECTION</small>
+            </div>
+          </div>
 
-              <div className="modal-content">
-                <span className="modal-number">
-                  {String(selectedProject + 1).padStart(2, "0")} / SHOWCASE
-                </span>
-
-                <h3>
-                  {selectedCategoryData
-                    ? selectedCategoryData.name
-                    : "Showcase Piece"}
-                </h3>
-
-                <span className="modal-category">
-                  {selectedCategoryData
-                    ? selectedCategoryData.name
-                    : "Creative Direction"}
-                </span>
-
-                <p>
-                  A piece from the interactive showcase collection,
-                  presented in detail.
-                </p>
-
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="button button-dark"
-                >
-                  Discuss a similar project
-                  <ArrowUpRight size={17} />
-                </a>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+          {loopImages.map((img, index) => (
+            <div
+              key={`r-${index}`}
+              className="slide-item"
+              style={{ width: "300px" }}
+            >
+              <Artwork
+                src={img}
+                alt={`Slide ${(index % allImages.length) + 1}`}
+                className="slide-img"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
