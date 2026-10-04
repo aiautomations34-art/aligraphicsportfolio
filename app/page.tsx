@@ -17,38 +17,34 @@ const whatsappUrl =
 const projects = [
   {
     number: "01",
-    title: "NOVA Coffee",
-    category: "Brand Identity",
-    description:
-      "A warm, expressive identity system created for a modern specialty coffee brand.",
-    image: "/images/project-branding.webp",
+    title: "Logo Designs",
+    category: "Logo Design",
+    description: "Creative logo designs for various brands and businesses.",
+    image: "/images/logo/logo you.webp",
     className: "project-a",
   },
   {
     number: "02",
-    title: "Mono Social",
-    category: "Social Media Design",
-    description:
-      "A bold campaign system designed to help a digital brand stand out online.",
-    image: "/images/project-social.webp",
+    title: "Vertical Posters",
+    category: "Poster Design",
+    description: "Modern vertical poster designs for social media and campaigns.",
+    image: "/images/r/vertical posters/Nike post.webp",
     className: "project-b",
   },
   {
     number: "03",
-    title: "Frame Finance",
-    category: "UI / UX Design",
-    description:
-      "A clean and confident interface direction for a next-generation finance product.",
-    image: "/images/project-ui.webp",
+    title: "Horizontal Posters",
+    category: "Banner Design",
+    description: "Creative horizontal posters and banners for promotions.",
+    image: "/images/r/horizontal posters/glee 1.webp",
     className: "project-c",
   },
   {
     number: "04",
-    title: "Form & Function",
-    category: "Editorial Design",
-    description:
-      "A visual editorial experiment combining typography, composition, and texture.",
-    image: "/images/project-editorial.webp",
+    title: "UI Design",
+    category: "Web UI Design",
+    description: "Modern user interface designs for web applications.",
+    image: "/images/r/ui/main frame landing page design - Copy.webp",
     className: "project-d",
   },
 ];
@@ -223,8 +219,8 @@ export default function Home() {
               <div className="swatch" style={{ background: "#bdb6ff" }} />
               <div className="swatch" style={{ background: "#ffffff" }} />
             </div>
-            <div className="typography-sample">Aa</div>
-            <div className="card-label">#BRAND_SYSTEM_01</div>
+            <div className="typography-sample">AH</div>
+            <div className="card-label">#ALI_HASSAN</div>
           </div>
 
           <div className="visual-card card-sub">
